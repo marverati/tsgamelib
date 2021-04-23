@@ -1,19 +1,21 @@
 import { game } from "../../index";
 import Character from "./Character";
 import Vector2 from "../shared/Vector2";
-import GameObject from "../GameObject";
+import SceneObject from "../SceneObject";
+import GameScene from "./scenes/GameScene";
+import Scene from "../Scene";
 
 const ATTRACT_POWER = 1500;
 const REPELL_POWER = 1000;
 const MAX_REPELL_DISTANCE = 1000;
 
-export default class Controls extends GameObject {
+export default class Controls extends SceneObject {
     private player1: Character | null = null;
     private player2: Character | null = null;
     private players: Character[];
 
-    public constructor() {
-        super();
+    public constructor(scene: Scene) {
+        super(scene);
     }
 
     public getState(): null {
@@ -55,7 +57,7 @@ export default class Controls extends GameObject {
         matrix = matrix.translate(canvas.width / 2, canvas.height / 2);
         matrix = matrix.scale(cam.zoom, cam.zoom);
         matrix = matrix.translate(-cam.x, -cam.y);
-        this.getGame().setCamera(matrix);
+        (this.getScene() as GameScene).setCamera(matrix);
     }
 
     public getCameraPosition(): {x: number, y: number, zoom: number} {

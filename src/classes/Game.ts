@@ -1,7 +1,7 @@
 import { clamp } from "../util";
 import KeyHandler from "./KeyHandler";
-import GameObject from "./GameObject";
 import Loader from "./Loader";
+import SceneManager from "./SceneManager";
 
 const MAX_DT = 80;
 
@@ -9,8 +9,7 @@ const FAKE_LOW_FPS = false;
 const LOW_FPS_FRAME_DELAY = 100;
 
 export function loadMedia(target: Loadable) {
-    console.log('Loading level assets');
-    Game.getInstance().loadMedia(target);
+    target.load(Game.getInstance().loader);
 }
 
 interface Loadable {
@@ -22,10 +21,10 @@ export default class Game {
     private canvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
 
+    public readonly sceneManager = new SceneManager(this);
     public readonly keyHandler = new KeyHandler();
 
     public readonly loader = new Loader();
-    private camTransform: number[] | DOMMatrix = new DOMMatrix();
 
     private lastTime = performance.now();
     private appTime = 0;
@@ -36,8 +35,6 @@ export default class Game {
     private currentFps = 0;
     private showFps = true;
 
-    private gameObjects: GameObject[] = [];
-
     private constructor() {
         setTimeout(() => this.update(), 0);
         setTimeout(() => this.draw(), 0);
@@ -45,17 +42,6 @@ export default class Game {
 
     public static getInstance(): Game {
         return Game.theInstance;
-    }
-
-    public register(obj: GameObject): void {
-        // TODO evaluate whether this hurts performance
-        if (!this.gameObjects.includes(obj)) {
-            this.gameObjects.push(obj);
-        }
-    }
-
-    public loadMedia(obj: Loadable): void {
-        obj.load(this.loader);
     }
 
     public setCanvas(canvas: string | HTMLCanvasElement): void {
@@ -81,13 +67,8 @@ export default class Game {
         this.gameTime += this.gameDt;
         this.handleFps(t, lastTime);
 
-
         this.keyHandler.update(t);
-
-        // Update game content
-        for (const obj of this.gameObjects) {
-            obj.update(this.gameDt, this.gameTime);
-        }
+        this.sceneManager.update(this.gameDt, t);
 
         if (!FAKE_LOW_FPS) {
             requestAnimationFrame(() => this.update());
@@ -102,18 +83,7 @@ export default class Game {
             this.context.fillStyle = "black";
             this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-            // Camera
-            const t = this.camTransform;
-            if (t instanceof DOMMatrix) {
-                this.context.setTransform(t);
-            } else {
-                this.context.setTransform(t[0], t[1], t[2], t[3], t[4], t[5]);
-            }
-
-            // Draw game content
-            for (const obj of this.gameObjects) {
-                obj.draw(this.context, this.gameTime, this.gameDt);
-            }
+            this.sceneManager.draw(this.context, this.gameTime, this.gameDt);
 
             // FPS counter
             if (this.showFps) {
@@ -128,10 +98,6 @@ export default class Game {
         }
 
         requestAnimationFrame(() => this.draw());
-    }
-
-    public setCamera(camTransform: number[] | DOMMatrix) {
-        this.camTransform = camTransform;
     }
 
     private handleFps(time: number, lastTime: number) {

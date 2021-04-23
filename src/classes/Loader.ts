@@ -8,32 +8,42 @@ export default class Loader {
     private progress = 0;
     private allAdded = false;
     private resolver: Function = null;
+    private resolvePromise: Promise<void> = null;
 
     public constructor() {}
 
     public loadAll() {
         this.allAdded = true;
         if (this.total >= this.count) {
+            this.progress = 1;
             return Promise.resolve();
         } else {
-            return new Promise((resolve) => {
-                this.resolver = resolve;
-            });
+            if (!this.resolvePromise) {
+                this.resolvePromise = new Promise((resolve) => {
+                    this.resolver = resolve;
+                });
+            }
+            return this.resolvePromise;
         }
     };
 
     public loadImage(src: string, frameCountX = 1, frameCountY = 1): HTMLImageElement {
         this.count++;
         const img = new Image();
+        console.log("Loading image");
         img.onload = () => {
+            console.log("loaded");
             this.total++;
             if (frameCountX > 1 || frameCountY > 1) {
                 // img.frameWidth = img.width / frameCountX;
                 // img.frameHeight = img.height / frameCountY;
             }
+            console.log("updating");
             this.update();
+            console.log("done");
         };
         img.onerror = () => {
+            console.log("errored");
             this.errors++;
             this.total++;
             this.update();
@@ -86,6 +96,7 @@ export default class Loader {
     public update() {
         if (this.allAdded) {
             this.progress = clamp(this.total / this.count, 0, 1);
+            console.log(this.total, " / ", this.count, " -> ", this.progress);
             if (this.total >= this.count) {
                 if (this.resolver) {
                     this.resolver();

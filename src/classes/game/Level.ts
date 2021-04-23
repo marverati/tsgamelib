@@ -3,8 +3,9 @@ import Character from "./Character";
 import Rect from "../shared/Rect";
 import Vector2 from "../shared/Vector2";
 import Game, { loadMedia } from "../Game";
-import GameObject from "../GameObject";
+import SceneObject from "../SceneObject";
 import Loader from "../Loader";
+import Scene from "../Scene";
 
 const BORDER_BLOCK_SIZE = 8192;
 
@@ -12,7 +13,7 @@ export type Collider = Character | Block;
 export type PossibleCollider = Collider | null;
 
 @loadMedia
-export default class Level extends GameObject {
+export default class Level extends SceneObject {
     // State properties
     private blocks: Block[] = [];
     private characters: Character[] = [];
@@ -21,8 +22,8 @@ export default class Level extends GameObject {
     // Static & non-state-essential
     private static someImage: HTMLImageElement;
 
-    public constructor(private w: number, private h: number) {
-        super();
+    public constructor(scene: Scene, private w: number, private h: number) {
+        super(scene);
         if (w < Infinity && h < Infinity) {
             const sz = BORDER_BLOCK_SIZE;
             this.addBlock(-sz, -sz, sz, h + 2 * sz);

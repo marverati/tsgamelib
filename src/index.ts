@@ -3,25 +3,36 @@ import ControlsHandler from "./classes/game/ControlsHandler";
 import Level from "./classes/game/Level";
 import MovingBlock, { Movements } from "./classes/game/levelContent/MovingBlock";
 import Player from "./classes/game/Player";
+import VeryFirstScene from "./classes/game/scenes/VeryFirstScene";
+import LoadScene from "./classes/game/scenes/LoadScene";
+import GameScene from "./classes/game/scenes/GameScene";
 import { exposeToWindow } from "./util";
+import Scene from "./classes/Scene";
 
 export let game: Game;
 
 window.addEventListener("load", () => {
     game = Game.getInstance();
     game.setCanvas("gameCanvas");
+    // Scene setup
+    let gameScene: Scene;
+    game.sceneManager
+        .add(new VeryFirstScene())
+        .add(new LoadScene())
+        .add(gameScene = new GameScene())
+        .switchTo("VeryFirstScene", 1)
     game.loader.loadAll().then(() => {
-        const level = buildLevel();
+        const level = buildLevel(gameScene);
         const players = level.getCharacters().filter(c => c instanceof Player);
-        const controls = new ControlsHandler();
+        const controls = new ControlsHandler(gameScene);
         controls.setPlayers(players[0] ?? null, players[1] ?? null);
     });
     exposeToWindow({ game });
 });
 
 
-function buildLevel(): Level {
-    const level = new Level(2000, 1500);
+function buildLevel(gameScene: Scene): Level {
+    const level = new Level(gameScene, 2000, 1500);
     level.addBlock(400, 1400, 200, 200);
     level.addBlock(500, 1310, 500, 200);
     level.addBlock(1200, 1310, 200, 200);

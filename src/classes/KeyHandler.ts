@@ -36,7 +36,7 @@ export default class KeyHandler {
         return this.keyStates[key].tick === this.tick;
     }
 
-    private registerEvents(target: HTMLElement): void {
+    protected registerEvents(target: HTMLElement): void {
         target.addEventListener("keydown", this.handleKeyDown.bind(this));
         target.addEventListener("keyup", this.handleKeyUp.bind(this));
     }
@@ -66,4 +66,11 @@ export default class KeyHandler {
             return true;
         }
     }
+}
+
+/**
+ * A specific KeyHandler that never recognizes any key events.
+ */
+export class FakeKeyHandler extends KeyHandler {
+    protected registerEvents(target: HTMLElement): void {}
 }
