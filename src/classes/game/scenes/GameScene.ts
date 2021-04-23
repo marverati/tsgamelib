@@ -1,6 +1,7 @@
 import SceneObject from "../../SceneObject";
 import KeyHandler from "../../KeyHandler";
 import Scene from "../../Scene";
+import { ContextReplacementPlugin } from "webpack";
 
 
 export default class GameScene extends Scene {
@@ -21,6 +22,7 @@ export default class GameScene extends Scene {
         }
 
         // Camera
+        ctx.save();
         const t = this.camTransform;
         if (t instanceof DOMMatrix) {
             ctx.setTransform(t);
@@ -33,11 +35,19 @@ export default class GameScene extends Scene {
         }
 
         super.draw(ctx, opacity, time, dt);
+        ctx.restore();
+
+        // UI
+        ctx.fillStyle = "darkgreen";
+        ctx.font = "20px Arial";
+        const worldPos = this.mouseHandler.getWorldPos();
+        const screenPos = this.mouseHandler.getCanvasPos();
+        const coords = (worldPos[0] << 0) + "," + (worldPos[1] << 0);
+        ctx.fillText(coords, screenPos[0], screenPos[1]);
 
     }
 
-    public update(dt: number, time: number, keyHandler: KeyHandler) {
-        super.update(dt, time, keyHandler);
+    public update(dt: number, time: number) {
     }
 
     public setCamera(camTransform: number[] | DOMMatrix) {

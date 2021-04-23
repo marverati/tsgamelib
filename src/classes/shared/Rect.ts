@@ -1,4 +1,4 @@
-import { exposeToWindow } from "../../util";
+import { exposeToWindow } from "../shared/util";
 import Vector2 from "./Vector2";
 
 export default class Rect {

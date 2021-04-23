@@ -6,7 +6,7 @@ import Player from "./classes/game/Player";
 import VeryFirstScene from "./classes/game/scenes/VeryFirstScene";
 import LoadScene from "./classes/game/scenes/LoadScene";
 import GameScene from "./classes/game/scenes/GameScene";
-import { exposeToWindow } from "./util";
+import { exposeToWindow } from "./classes/shared/util";
 import Scene from "./classes/Scene";
 
 export let game: Game;

@@ -1,5 +1,6 @@
 import Game from "./Game";
 import { FakeKeyHandler } from "./KeyHandler";
+import { FakeMouseHandler } from "./MouseHandler";
 import Scene from "./Scene";
 
 type SceneData = {
@@ -25,6 +26,7 @@ export default class SceneManager {
     private sceneData: Map<Scene, SceneData> = new Map<Scene, SceneData>();
 
     private fakeKeyHandler = new FakeKeyHandler();
+    private fakeMouseHandler = new FakeMouseHandler();
 
     public constructor(public readonly game: Game) {
     }
@@ -61,8 +63,8 @@ export default class SceneManager {
             data.dt = sceneDt;
             data.time += sceneDt;
             const keyHandler = (scene === this.focusedScene) ? this.game.keyHandler : this.fakeKeyHandler;
-            // const mouseHandler = (scene === this.focusedScene) ? this.game.mouseHandler : this.fakeMouseHandler;
-            scene.update(sceneDt, data.time, keyHandler);
+            const mouseHandler = (scene === this.focusedScene) ? this.game.mouseHandler : this.fakeMouseHandler;
+            scene.updateInternal(sceneDt, data.time, keyHandler, mouseHandler);
         }
     }
 

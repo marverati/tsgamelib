@@ -1,5 +1,6 @@
 import KeyHandler from "./KeyHandler";
 import Loader from "./Loader";
+import MouseHandler from "./MouseHandler";
 import SceneManager from "./SceneManager";
 import SceneObject from "./SceneObject";
 
@@ -8,6 +9,7 @@ export default abstract class Scene {
     protected manager: SceneManager | null = null;
     protected sceneObjects: SceneObject[] = [];
     protected keyHandler: KeyHandler;
+    protected mouseHandler: MouseHandler;
 
     public constructor(public readonly name: string) {
     }
@@ -18,10 +20,17 @@ export default abstract class Scene {
 
     public register(obj: SceneObject): void {
         // TODO evaluate whether this hurts performance
-        console.log("REGGED ", obj);
         if (!this.sceneObjects.includes(obj)) {
             this.sceneObjects.push(obj);
         }
+    }
+
+    public getKeyHandler() {
+        return this.keyHandler;
+    }
+
+    public getMouseHandler() {
+        return this.mouseHandler;
     }
 
     /** Note: when implementing load method, make sure to add @loadMedia decorator to your scene class */
@@ -34,14 +43,17 @@ export default abstract class Scene {
         }
     }
 
-    public update(dt: number, time: number, keyHandler: KeyHandler) {
+    public updateInternal(dt: number, time: number, keyHandler: KeyHandler, mouseHandler: MouseHandler) {
+        this.mouseHandler = mouseHandler;
         this.keyHandler = keyHandler;
+        this.update(dt, time);
         // Update content
         for (const obj of this.sceneObjects) {
             obj.update(dt, time);
         }
     }
 
+    public update(dt: number, time: number) {}
 
     public getGame() {
         return this.manager.game;

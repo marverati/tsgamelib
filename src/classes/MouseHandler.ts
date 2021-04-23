@@ -3,7 +3,7 @@ import { getRelativeMouseCoordinates } from "./shared/util";
 
 export default class MouseHandler {
 
-    private referenceWindow: HTMLElement = null;
+    private target: HTMLElement = null;
 
     private mouse = {
         click: 0,
@@ -21,33 +21,52 @@ export default class MouseHandler {
         scaleX: 1,
         scaleY: 1,
         rotation: 0,
-        rotationCos: 1, // Cos 0 => 1
-        rotationSin: 0, // Sin 0 => 0
+        rotationCos: 1, // = Cos 0°
+        rotationSin: 0, // = Sin 0°
     };
 
-
-    constructor(target: HTMLElement) {
-        this.referenceWindow = target
-        this.registerEvents(target);
+    constructor(target: HTMLElement = document.body) {
+        this.target = target;
+        this.registerEvents(document.body);
     }
 
-    private registerEvents(target: HTMLElement): void {
-        target.addEventListener('mousedown', this.handleMouseDown.bind(this))
-        target.addEventListener('mouseup', this.handleMouseUp.bind(this))
-        target.addEventListener('mousemove', this.handleMouseMove.bind(this))
+    public setTarget(target: HTMLElement) {
+        this.target = target;
+    }
+
+    public get() {
+        return this.mouse;
+    }
+
+    public getWorldPos() {
+        return [ this.mouse.x, this.mouse.y ];
+    }
+
+    public getCanvasPos() {
+        return [ this.mouse.absX, this.mouse.absY ];
+    }
+
+    public getRelativeCanvasPos() {
+        return [ this.mouse.canvasX / this.target.clientWidth, this.mouse.canvasY / this.target.clientHeight ];
+    }
+
+    public getDown() {
+        return this.mouse.click;
+    }
+
+    protected registerEvents(target: HTMLElement): void {
+        target.addEventListener('mousedown', this.handleMouseDown.bind(this));
+        target.addEventListener('mouseup', this.handleMouseUp.bind(this));
+        target.addEventListener('mousemove', this.handleMouseMove.bind(this));
     }
 
     private setMouseCoordinates(event: MouseEvent) {
-        const relativeMouseCoordinates = getRelativeMouseCoordinates(event, this.referenceWindow)
-        this.mouse.absX = relativeMouseCoordinates[0]
-        this.mouse.absY = relativeMouseCoordinates[1]
-        this.mouse.canvasX = relativeMouseCoordinates[0] * this.referenceWindow.clientWidth / this.referenceWindow.offsetWidth
-        this.mouse.canvasY = relativeMouseCoordinates[1] * this.referenceWindow.clientHeight / this.referenceWindow.offsetHeight;
-        [this.mouse.x, this.mouse.y] = this.transformCoordinates(this.mouse.canvasX, this.mouse.canvasY)
-    }
-
-    private handleMouseMove(event: MouseEvent) {
-        this.setMouseCoordinates(event);
+        const relativeMouseCoordinates = getRelativeMouseCoordinates(event, this.target);
+        this.mouse.absX = relativeMouseCoordinates[0];
+        this.mouse.absY = relativeMouseCoordinates[1];
+        this.mouse.canvasX = relativeMouseCoordinates[0] * this.target.clientWidth / this.target.offsetWidth;
+        this.mouse.canvasY = relativeMouseCoordinates[1] * this.target.clientHeight / this.target.offsetHeight;
+        [this.mouse.x, this.mouse.y] = this.transformCoordinates(this.mouse.canvasX, this.mouse.canvasY);
     }
 
     public setCanvasTransform = function (offX = 0, offY = 0, scaleX = 1, scaleY = scaleX, rotation = 0, invert = true) {
@@ -83,13 +102,22 @@ export default class MouseHandler {
             this.transform.rotationSin * x + this.transform.rotationCos * y
         ];
     }
-    private handleMouseDown(event: MouseEvent) {
-        this.mouse.click = 1
-        this.setMouseCoordinates(event)
 
+    private handleMouseMove(event: MouseEvent) {
+        this.setMouseCoordinates(event);
     }
+
+    private handleMouseDown(event: MouseEvent) {
+        this.mouse.click = 1;
+        this.setMouseCoordinates(event);
+    }
+
     private handleMouseUp(event: MouseEvent) {
-        this.mouse.click = 0
-        this.setMouseCoordinates(event)
+        this.mouse.click = 0;
+        this.setMouseCoordinates(event);
     }
+}
+
+export class FakeMouseHandler extends MouseHandler {
+    protected registerEvents(target: HTMLElement): void {}
 }

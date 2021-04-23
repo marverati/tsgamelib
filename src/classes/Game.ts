@@ -1,6 +1,7 @@
-import { clamp } from "../util";
+import { clamp } from "./shared/util";
 import KeyHandler from "./KeyHandler";
 import Loader from "./Loader";
+import MouseHandler from "./MouseHandler";
 import SceneManager from "./SceneManager";
 
 const MAX_DT = 80;
@@ -15,6 +16,7 @@ export function loadMedia(target: Loadable) {
 interface Loadable {
     load: (loader: Loader) => void;
 }
+
 export default class Game {
     private static theInstance: Game = new Game();
 
@@ -23,6 +25,7 @@ export default class Game {
 
     public readonly sceneManager = new SceneManager(this);
     public readonly keyHandler = new KeyHandler();
+    public readonly mouseHandler = new MouseHandler();
 
     public readonly loader = new Loader();
 
@@ -50,6 +53,7 @@ export default class Game {
         }
         this.canvas = canvas;
         this.context = this.canvas.getContext("2d");
+        this.mouseHandler.setTarget(this.canvas);
     }
 
     public getCanvas(): HTMLCanvasElement | null {

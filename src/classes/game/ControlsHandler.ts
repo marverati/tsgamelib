@@ -1,4 +1,3 @@
-import { game } from "../../index";
 import Character from "./Character";
 import Vector2 from "../shared/Vector2";
 import SceneObject from "../SceneObject";
@@ -9,7 +8,7 @@ const ATTRACT_POWER = 1500;
 const REPELL_POWER = 1000;
 const MAX_REPELL_DISTANCE = 1000;
 
-export default class Controls extends SceneObject {
+export default class ControlsHandler extends SceneObject {
     private player1: Character | null = null;
     private player2: Character | null = null;
     private players: Character[];
@@ -33,10 +32,10 @@ export default class Controls extends SceneObject {
         this.player2 && this.control(this.player2, "ArrowUp", "ArrowLeft", "ArrowDown", "ArrowRight");
 
         // Temporary solution for bonding controls
-        if (game.keyHandler.getDown("q")) {
+        if (this.getScene().getKeyHandler().getDown("q")) {
             this.attract();
         }
-        if (game.keyHandler.getDown("e")) {
+        if (this.getScene().getKeyHandler().getDown("e")) {
             this.repell();
         }
 
@@ -58,6 +57,7 @@ export default class Controls extends SceneObject {
         matrix = matrix.scale(cam.zoom, cam.zoom);
         matrix = matrix.translate(-cam.x, -cam.y);
         (this.getScene() as GameScene).setCamera(matrix);
+        this.getScene().getMouseHandler().setCanvasTransform(canvas.width / 2 - cam.zoom * cam.x, canvas.height / 2 - cam.zoom * cam.y, cam.zoom, cam.zoom, 0);
     }
 
     public getCameraPosition(): {x: number, y: number, zoom: number} {
@@ -83,7 +83,7 @@ export default class Controls extends SceneObject {
     }
 
     private control(player: Character, up: string, left: string, down: string, right: string): void {
-        const keys = game.keyHandler;
+        const keys = this.getScene().getKeyHandler();
         const rl = (keys.get(right) ? 1 : 0) - (keys.get(left) ? 1 : 0);
         const jump = keys.getDown(up);
         const hold = keys.get(down);
