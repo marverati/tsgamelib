@@ -41,7 +41,7 @@ function mapRange(number: number, min1: number, max1: number, min2: number, max2
     return (number - min1) * (max2 - min2) / (max1 - min1) + min2;
 }
 
-function getRelativeMouseCoordinates(event: MouseEvent, relativeTo: HTMLElement = event.target as HTMLElement) {
+export function getRelativeMouseCoordinates(event: MouseEvent, relativeTo: HTMLElement = event.target as HTMLElement) {
     // TODO throw an error if getBoundingClientRect is not available
     const rect = relativeTo.getBoundingClientRect();
     const x = event.clientX - rect.left;
