@@ -14,6 +14,12 @@ export default class GameScene extends Scene {
     public load() {}
 
     public draw(ctx: CanvasRenderingContext2D, opacity: number, time: number, dt: number): void {
+        if (opacity < 1) {
+            ctx.beginPath();
+            ctx.rect(0, 0, ctx.canvas.width * opacity, ctx.canvas.height);
+            ctx.clip();
+        }
+
         // Camera
         const t = this.camTransform;
         if (t instanceof DOMMatrix) {
@@ -22,9 +28,12 @@ export default class GameScene extends Scene {
             ctx.setTransform(t[0], t[1], t[2], t[3], t[4], t[5]);
         }
 
+        if (opacity < 1) {
+            ctx.translate(-ctx.canvas.width * (1 - opacity), 0);
+        }
+
         super.draw(ctx, opacity, time, dt);
 
-        ctx.globalAlpha = opacity;
     }
 
     public update(dt: number, time: number, keyHandler: KeyHandler) {
