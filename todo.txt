@@ -4,9 +4,9 @@ TODO
 [X] Move game content to separate folder
 [X] Game object registering
 [X] Loading media
+[X] Scene handling
+[X] Mouse handler
 [/] Game object state representation (enabling saving of progress)
-[ ] Scene handling
-[ ] Mouse handler
 [ ] Transitions
 [ ] rendering util (incl. spritesheets)
 [ ] Music manager
