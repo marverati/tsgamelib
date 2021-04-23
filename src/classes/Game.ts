@@ -1,5 +1,4 @@
 import { clamp } from "../util";
-import ControlsHandler from "./game/ControlsHandler";
 import KeyHandler from "./KeyHandler";
 import GameObject from "./GameObject";
 
@@ -15,7 +14,8 @@ export default class Game {
     private context: CanvasRenderingContext2D;
 
     public readonly keyHandler = new KeyHandler();
-    public readonly controls = new ControlsHandler();
+
+    private camTransform: number[] | DOMMatrix = new DOMMatrix();
 
     private lastTime = performance.now();
     private appTime = 0;
@@ -52,6 +52,10 @@ export default class Game {
         this.context = this.canvas.getContext("2d");
     }
 
+    public getCanvas(): HTMLCanvasElement | null {
+        return this.canvas;
+    }
+
     public update(): void {
         // General time handling
         const t = performance.now()
@@ -63,16 +67,13 @@ export default class Game {
         this.gameTime += this.gameDt;
         this.handleFps(t, lastTime);
 
-        // Controls
+
         this.keyHandler.update(t);
-        this.controls.update(this.gameDt, this.gameTime);
+
         // Update game content
         for (const obj of this.gameObjects) {
             obj.update(this.gameDt, this.gameTime);
         }
-        // if (this.level) {
-        //     this.level.update(this.gameDt, this.gameTime);
-        // }
 
         if (!FAKE_LOW_FPS) {
             requestAnimationFrame(() => this.update());
@@ -88,16 +89,17 @@ export default class Game {
             this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     
             // Camera
-            this.controls.updateCamera(this.context);
+            const t = this.camTransform;
+            if (t instanceof DOMMatrix) {
+                this.context.setTransform(t);
+            } else {
+                this.context.setTransform(t[0], t[1], t[2], t[3], t[4], t[5]);
+            }
     
             // Draw game content
             for (const obj of this.gameObjects) {
                 obj.draw(this.context, this.gameTime, this.gameDt);
             }
-            // Draw level
-            // if (this.level) {
-            //     this.level.draw(this.context, this.gameTime, this.gameDt);
-            // }
     
             // FPS counter
             if (this.showFps) {
@@ -112,6 +114,10 @@ export default class Game {
         }
 
         requestAnimationFrame(() => this.draw());
+    }
+
+    public setCamera(camTransform: number[] | DOMMatrix) {
+        this.camTransform = camTransform;
     }
 
     private handleFps(time: number, lastTime: number) {

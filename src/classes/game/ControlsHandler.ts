@@ -1,19 +1,19 @@
 import { game } from "../../index";
 import Character from "./Character";
-import Game from "../Game";
-import Level from "./Level";
 import Vector2 from "../shared/Vector2";
+import GameObject from "../GameObject";
 
 const ATTRACT_POWER = 1500;
 const REPELL_POWER = 1000;
 const MAX_REPELL_DISTANCE = 1000;
 
-export default class Controls {
+export default class Controls extends GameObject {
     private player1: Character | null = null;
     private player2: Character | null = null;
     private players: Character[];
 
     public constructor() {
+        super();
     }
 
     public setPlayers(player1: Character | null, player2: Character | null) {
@@ -33,14 +33,25 @@ export default class Controls {
         if (game.keyHandler.getDown("e")) {
             this.repell();
         }
+
+        this.updateCamera();
     }
 
-    public updateCamera(context: CanvasRenderingContext2D): void {
-        context.setTransform(1, 0, 0, 1, 0, 0);
+    public draw(): void {}
+
+    public updateCamera(): void {
+        const canvas = this.getGame().getCanvas();
+        if (!canvas) {
+            return;
+        }
+
+        // TODO polyfill for IE users?
         const cam = this.getCameraPosition();
-        context.translate(context.canvas.width / 2, context.canvas.height / 2);
-        context.scale(cam.zoom, cam.zoom);
-        context.translate(-cam.x, -cam.y);
+        let matrix = new DOMMatrix();
+        matrix = matrix.translate(canvas.width / 2, canvas.height / 2);
+        matrix = matrix.scale(cam.zoom, cam.zoom);
+        matrix = matrix.translate(-cam.x, -cam.y);
+        this.getGame().setCamera(matrix);
     }
 
     public getCameraPosition(): {x: number, y: number, zoom: number} {

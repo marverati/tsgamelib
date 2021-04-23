@@ -1,4 +1,5 @@
 import Game from "./classes/Game"
+import ControlsHandler from "./classes/game/ControlsHandler";
 import Level from "./classes/game/Level";
 import MovingBlock, { Movements } from "./classes/game/levelContent/MovingBlock";
 import Player from "./classes/game/Player";
@@ -11,7 +12,8 @@ window.addEventListener("load", () => {
     game.setCanvas("gameCanvas");
     const level = buildLevel();
     const players = level.getCharacters().filter(c => c instanceof Player);
-    game.controls.setPlayers(players[0] ?? null, players[1] ?? null);
+    const controls = new ControlsHandler();
+    controls.setPlayers(players[0] ?? null, players[1] ?? null);
     exposeToWindow({ game });
 });
 

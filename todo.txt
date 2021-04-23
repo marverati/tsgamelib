@@ -2,7 +2,7 @@ TODO
 [X] Game loop
 [X] util
 [X] Move game content to separate folder
-[/] Game object registering
+[X] Game object registering
 [ ] Loading media
 [ ] Game object state representation (enabling saving of progress)
 [ ] Scene handling
