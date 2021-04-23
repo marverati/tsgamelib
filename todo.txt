@@ -1,0 +1,12 @@
+TODO
+[X] Game loop
+[X] util
+[X] Move game content to separate folder
+[ ] Game object state representation
+[ ] Loading
+[ ] Scene handling
+[ ] Mouse handler
+[ ] Transitions
+[ ] rendering util (spritesheets)
+[ ] Music manager
+[ ] Camera

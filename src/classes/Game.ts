@@ -1,8 +1,8 @@
 import { clamp } from "../util";
-import ControlsHandler from "./ControlsHandler";
+import ControlsHandler from "./game/ControlsHandler";
 import KeyHandler from "./KeyHandler";
-import Level from "./Level";
-import Player from "./Player";
+import Level from "./game/Level";
+import Player from "./game/Player";
 
 const MAX_DT = 80;
 
@@ -90,6 +90,7 @@ export default class Game {
         requestAnimationFrame(() => this.draw());
     }
 
+    // TODO get rid of explicit level reference
     public setLevel(level: Level): void {
         this.level = level;
         // Take control over all Players

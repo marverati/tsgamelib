@@ -1,8 +1,8 @@
-import { game } from "../index";
+import { game } from "../../index";
 import Character from "./Character";
-import Game from "./Game";
+import Game from "../Game";
 import Level from "./Level";
-import Vector2 from "./Vector2";
+import Vector2 from "../shared/Vector2";
 
 const ATTRACT_POWER = 1500;
 const REPELL_POWER = 1000;

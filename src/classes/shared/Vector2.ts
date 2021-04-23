@@ -1,4 +1,4 @@
-import { exposeToWindow } from "../util";
+import { exposeToWindow } from "../../util";
 
 export default class Vector2 {
     public constructor(public readonly x = 0, public readonly y = 0) {}

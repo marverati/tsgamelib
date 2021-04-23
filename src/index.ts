@@ -1,7 +1,7 @@
 import Game from "./classes/Game"
-import Level from "./classes/Level";
-import MovingBlock, { Movements } from "./classes/levelContent/MovingBlock";
-import Player from "./classes/Player";
+import Level from "./classes/game/Level";
+import MovingBlock, { Movements } from "./classes/game/levelContent/MovingBlock";
+import Player from "./classes/game/Player";
 import { exposeToWindow } from "./util";
 
 export let game: Game;

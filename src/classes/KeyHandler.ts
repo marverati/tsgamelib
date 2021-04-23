@@ -12,7 +12,7 @@ export default class KeyHandler {
         this.registerEvents(target);
     }
 
-    public update(time = +Date.now()): void {
+    public update(time = +performance.now()): void {
         this.tick++;
     }
 

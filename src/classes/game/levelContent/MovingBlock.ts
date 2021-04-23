@@ -1,4 +1,4 @@
-import Vector2 from "../Vector2";
+import Vector2 from "../../shared/Vector2";
 import Block from "./Block";
 
 export enum Movements {

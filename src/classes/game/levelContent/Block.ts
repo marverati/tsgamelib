@@ -1,5 +1,5 @@
-import Rect from "../Rect";
-import Vector2 from "../Vector2";
+import Rect from "../../shared/Rect";
+import Vector2 from "../../shared/Vector2";
 
 const BLOCK_COLOR = "#161616";
 

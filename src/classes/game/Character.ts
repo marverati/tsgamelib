@@ -1,7 +1,7 @@
 import Level, { Collider, PossibleCollider } from "./Level";
 import Block from "./levelContent/Block";
-import Rect from "./Rect";
-import Vector2 from "./Vector2";
+import Rect from "../shared/Rect";
+import Vector2 from "../shared/Vector2";
 
 const MAX_VELOCITY = 1000;
 
