@@ -12,10 +12,12 @@ export type Collider = Character | Block;
 export type PossibleCollider = Collider | null;
 
 export default class Level extends GameObject {
+    // State properties
     private blocks: Block[] = [];
     private characters: Character[] = [];
     private gravity: Vector2 = new Vector2(0, 981); // assuming 100px = 1m we get earth gravity constant G = 981
 
+    // Static & non-state-essential
     private static someImage: HTMLImageElement;
 
     public constructor(private w: number, private h: number) {
@@ -32,6 +34,12 @@ export default class Level extends GameObject {
 
     public static async load(loader: Loader): Promise<void> {
         Level.someImage = loader.loadImage("https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg");
+    }
+
+    public getState() {
+        return {
+            // TODO, including state of blocks, characters etc. I guess
+        }
     }
 
     public update(dt: number, time: number): void {

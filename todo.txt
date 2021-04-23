@@ -3,11 +3,11 @@ TODO
 [X] util
 [X] Move game content to separate folder
 [X] Game object registering
-[ ] Loading media
-[ ] Game object state representation (enabling saving of progress)
+[X] Loading media
+[/] Game object state representation (enabling saving of progress)
 [ ] Scene handling
 [ ] Mouse handler
 [ ] Transitions
-[ ] rendering util (spritesheets)
+[ ] rendering util (incl. spritesheets)
 [ ] Music manager
 [ ] Camera

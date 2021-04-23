@@ -1,5 +1,6 @@
 import Game from "./Game";
 
+export type GameObjectState = Record<string, any> | null;
 
 export default abstract class GameObject {
 
@@ -7,9 +8,11 @@ export default abstract class GameObject {
         this.getGame().register(this);
     }
 
-    public abstract update(dt: number, time: number): void;
+    public abstract getState(): GameObjectState;
 
-    public abstract draw(ctx: CanvasRenderingContext2D, time: number, dt: number): void;
+    public update(dt: number, time: number): void {};
+
+    public draw(ctx: CanvasRenderingContext2D, time: number, dt: number): void {};
 
     protected getGame() {
         return Game.getInstance();

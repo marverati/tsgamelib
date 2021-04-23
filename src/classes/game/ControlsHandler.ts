@@ -16,6 +16,10 @@ export default class Controls extends GameObject {
         super();
     }
 
+    public getState(): null {
+        return null;
+    }
+
     public setPlayers(player1: Character | null, player2: Character | null) {
         this.player1 = player1;
         this.player2 = player2;
