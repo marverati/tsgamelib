@@ -1,12 +1,20 @@
 import { clamp } from "../util";
 import KeyHandler from "./KeyHandler";
 import GameObject from "./GameObject";
+import Loader from "./Loader";
 
 const MAX_DT = 80;
 
 const FAKE_LOW_FPS = false;
 const LOW_FPS_FRAME_DELAY = 100;
 
+export function loadMedia(gameObjectClass: Loadable): void {
+    Game.getInstance().loadMedia(gameObjectClass);
+}
+
+interface Loadable {
+    load: (loader: Loader) => void;
+}
 export default class Game {
     private static theInstance: Game = new Game();
 
@@ -15,6 +23,7 @@ export default class Game {
 
     public readonly keyHandler = new KeyHandler();
 
+    public readonly loader = new Loader();
     private camTransform: number[] | DOMMatrix = new DOMMatrix();
 
     private lastTime = performance.now();
@@ -42,6 +51,10 @@ export default class Game {
         if (!this.gameObjects.includes(obj)) {
             this.gameObjects.push(obj);
         }
+    }
+
+    public loadMedia(obj: Loadable): void {
+        obj.load(this.loader);
     }
 
     public setCanvas(canvas: string | HTMLCanvasElement): void {

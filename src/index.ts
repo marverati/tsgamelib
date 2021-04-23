@@ -10,10 +10,12 @@ export let game: Game;
 window.addEventListener("load", () => {
     game = Game.getInstance();
     game.setCanvas("gameCanvas");
-    const level = buildLevel();
-    const players = level.getCharacters().filter(c => c instanceof Player);
-    const controls = new ControlsHandler();
-    controls.setPlayers(players[0] ?? null, players[1] ?? null);
+    game.loader.loadAll().then(() => {
+        const level = buildLevel();
+        const players = level.getCharacters().filter(c => c instanceof Player);
+        const controls = new ControlsHandler();
+        controls.setPlayers(players[0] ?? null, players[1] ?? null);
+    });
     exposeToWindow({ game });
 });
 

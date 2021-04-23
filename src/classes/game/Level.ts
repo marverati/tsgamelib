@@ -2,8 +2,9 @@ import Block from "./levelContent/Block";
 import Character from "./Character";
 import Rect from "../shared/Rect";
 import Vector2 from "../shared/Vector2";
-import Game from "../Game";
+import Game, { loadMedia } from "../Game";
 import GameObject from "../GameObject";
+import Loader from "../Loader";
 
 const BORDER_BLOCK_SIZE = 8192;
 
@@ -14,6 +15,9 @@ export default class Level extends GameObject {
     private blocks: Block[] = [];
     private characters: Character[] = [];
     private gravity: Vector2 = new Vector2(0, 981); // assuming 100px = 1m we get earth gravity constant G = 981
+
+    private static someImage: HTMLImageElement;
+
     public constructor(private w: number, private h: number) {
         super();
         if (w < Infinity && h < Infinity) {
@@ -23,10 +27,11 @@ export default class Level extends GameObject {
             this.addBlock(w, -sz, sz, h + 2 * sz);
             this.addBlock(-sz, h, w + 2 * sz, sz);
         }
+        Level.someImage && console.log("Loaded with size", Level.someImage.naturalWidth, Level.someImage.naturalHeight);
     }
 
-    public static load(): void {
-        // Level.someImage = loadImage("path");
+    public static async load(loader: Loader): Promise<void> {
+        Level.someImage = loader.loadImage("https://upload.wikimedia.org/wikipedia/en/a/a9/Example.jpg");
     }
 
     public update(dt: number, time: number): void {
@@ -108,3 +113,4 @@ export default class Level extends GameObject {
         return this.characters;
     }
 }
+loadMedia(Level);

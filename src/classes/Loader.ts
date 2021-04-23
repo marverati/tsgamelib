@@ -3,7 +3,6 @@ import { clamp } from "./shared/util";
 export default class Loader {
     // private images = [];
     private count = 0;
-    private loaded = 0;
     private errors = 0;
     private total = 0;
     private progress = 0;
@@ -13,24 +12,22 @@ export default class Loader {
     public constructor() {}
 
     public loadAll() {
-        var self = this;
         this.allAdded = true;
         if (this.total >= this.count) {
             return Promise.resolve();
         } else {
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
                 this.resolver = resolve;
             });
         }
     };
 
-    public loadImage(src: string, frameCountX: number, frameCountY: number) {
+    public loadImage(src: string, frameCountX = 1, frameCountY = 1): HTMLImageElement {
         this.count++;
-        var img = new Image();
+        const img = new Image();
         img.onload = () => {
-            this.loaded++;
             this.total++;
-            if (frameCountX) {
+            if (frameCountX > 1 || frameCountY > 1) {
                 // img.frameWidth = img.width / frameCountX;
                 // img.frameHeight = img.height / frameCountY;
             }
@@ -42,8 +39,7 @@ export default class Loader {
             this.update();
         };
         img.src = src;
-        if (frameCountX) {
-            if (frameCountY == null) { frameCountY = 1; }
+        if (frameCountX > 1 || frameCountY > 1) {
             // img.frameCount = frameCountX * frameCountY;
             // img.frameCountX = frameCountX;
             // img.frameCountY = frameCountY;
@@ -97,4 +93,12 @@ export default class Loader {
             }
         }
     };
+
+    public getProgress(): number {
+        return this.progress;
+    }
+
+    public getErrors(): number {
+        return this.errors;
+    }
 }
