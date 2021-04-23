@@ -11,6 +11,7 @@ const BORDER_BLOCK_SIZE = 8192;
 export type Collider = Character | Block;
 export type PossibleCollider = Collider | null;
 
+@loadMedia
 export default class Level extends GameObject {
     // State properties
     private blocks: Block[] = [];
@@ -121,4 +122,3 @@ export default class Level extends GameObject {
         return this.characters;
     }
 }
-loadMedia(Level);

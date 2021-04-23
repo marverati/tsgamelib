@@ -8,8 +8,9 @@ const MAX_DT = 80;
 const FAKE_LOW_FPS = false;
 const LOW_FPS_FRAME_DELAY = 100;
 
-export function loadMedia(gameObjectClass: Loadable): void {
-    Game.getInstance().loadMedia(gameObjectClass);
+export function loadMedia(target: Loadable) {
+    console.log('Loading level assets');
+    Game.getInstance().loadMedia(target);
 }
 
 interface Loadable {
@@ -100,7 +101,7 @@ export default class Game {
             // Clear
             this.context.fillStyle = "black";
             this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    
+
             // Camera
             const t = this.camTransform;
             if (t instanceof DOMMatrix) {
@@ -108,12 +109,12 @@ export default class Game {
             } else {
                 this.context.setTransform(t[0], t[1], t[2], t[3], t[4], t[5]);
             }
-    
+
             // Draw game content
             for (const obj of this.gameObjects) {
                 obj.draw(this.context, this.gameTime, this.gameDt);
             }
-    
+
             // FPS counter
             if (this.showFps) {
                 this.context.save();
