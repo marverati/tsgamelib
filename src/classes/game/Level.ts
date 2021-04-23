@@ -2,17 +2,20 @@ import Block from "./levelContent/Block";
 import Character from "./Character";
 import Rect from "../shared/Rect";
 import Vector2 from "../shared/Vector2";
+import Game from "../Game";
+import GameObject from "../GameObject";
 
 const BORDER_BLOCK_SIZE = 8192;
 
 export type Collider = Character | Block;
 export type PossibleCollider = Collider | null;
 
-export default class Level {
+export default class Level extends GameObject {
     private blocks: Block[] = [];
     private characters: Character[] = [];
     private gravity: Vector2 = new Vector2(0, 981); // assuming 100px = 1m we get earth gravity constant G = 981
     public constructor(private w: number, private h: number) {
+        super();
         if (w < Infinity && h < Infinity) {
             const sz = BORDER_BLOCK_SIZE;
             this.addBlock(-sz, -sz, sz, h + 2 * sz);
@@ -20,6 +23,10 @@ export default class Level {
             this.addBlock(w, -sz, sz, h + 2 * sz);
             this.addBlock(-sz, h, w + 2 * sz, sz);
         }
+    }
+
+    public static load(): void {
+        // Level.someImage = loadImage("path");
     }
 
     public update(dt: number, time: number): void {

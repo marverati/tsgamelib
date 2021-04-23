@@ -7,9 +7,11 @@ import { exposeToWindow } from "./util";
 export let game: Game;
 
 window.addEventListener("load", () => {
-    game = new Game("gameCanvas");
+    game = Game.getInstance();
+    game.setCanvas("gameCanvas");
     const level = buildLevel();
-    game.setLevel(level);
+    const players = level.getCharacters().filter(c => c instanceof Player);
+    game.controls.setPlayers(players[0] ?? null, players[1] ?? null);
     exposeToWindow({ game });
 });
 
