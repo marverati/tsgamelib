@@ -1,8 +1,11 @@
-import { clamp } from "./shared/util";
+import { clamp, isDev } from "./shared/util";
 import KeyHandler from "./KeyHandler";
 import Loader from "./Loader";
 import MouseHandler from "./MouseHandler";
+// import { SoundManager } from "./SoundManager";
 import SceneManager from "./SceneManager";
+import { BitmapFont } from "./BitmapFont";
+import { Fonts } from "./Loader";
 
 const MAX_DT = 80;
 
@@ -13,8 +16,13 @@ export function loadMedia(target: Loadable) {
     target.load(Game.getInstance().loader);
 }
 
-interface Loadable {
+export interface Loadable {
     load: (loader: Loader) => void;
+}
+
+const CanvasDimensions = {
+    width: 320,
+    height: 200
 }
 
 export default class Game {
@@ -23,9 +31,12 @@ export default class Game {
     private canvas: HTMLCanvasElement;
     private context: CanvasRenderingContext2D;
 
+    public isPaused = false;
+
     public readonly sceneManager = new SceneManager(this);
     public readonly keyHandler = new KeyHandler();
     public readonly mouseHandler = new MouseHandler();
+    // public readonly soundManager = SoundManager.getInstance();
 
     public readonly loader = new Loader();
 
@@ -36,11 +47,19 @@ export default class Game {
     private gameDt = 0;
     private fpsTimestamps: number[] = [];
     private currentFps = 0;
-    private showFps = true;
+    private showFps = isDev();
+    private boundUpdate: FrameRequestCallback;
+    private boundDraw: FrameRequestCallback;
+    static standardFont?: BitmapFont;
+    static headlineFont?: BitmapFont;
 
     private constructor() {
         setTimeout(() => this.update(), 0);
         setTimeout(() => this.draw(), 0);
+        this.boundUpdate = this.update.bind(this);
+        this.boundDraw = this.draw.bind(this);
+        this.loader.loadFont(Fonts.STANDARD_FONT).then(font => Game.standardFont = font);
+        this.loader.loadFont(Fonts.HEADLINE_FONT).then(font => Game.headlineFont = font);
     }
 
     public static getInstance(): Game {
@@ -54,6 +73,41 @@ export default class Game {
         this.canvas = canvas;
         this.context = this.canvas.getContext("2d");
         this.mouseHandler.setTarget(this.canvas);
+        window.addEventListener("resize", () => this.updateCanvasSize());
+        this.updateCanvasSize();
+         // Use Alt+Enter to toggle fullscreen mode.
+        window.addEventListener("keydown", async (event) => {
+            if (event.altKey && event.key === "Enter") {
+                const lockingEnabled = "keyboard" in navigator && "lock" in navigator.keyboard && typeof navigator.keyboard.lock === "function";
+                // If the browser is in full screen mode AND fullscreen has been triggered by our own keyboard shortcut...
+                if (window.matchMedia("(display-mode: fullscreen)").matches && document.fullscreenElement != null) {
+                    if (lockingEnabled) {
+                        navigator.keyboard.unlock();
+                    }
+                    await document.exitFullscreen();
+                } else {
+                    if (lockingEnabled) {
+                        await navigator.keyboard.lock(["Escape"]);
+                    }
+                    await document.body.requestFullscreen();
+                }
+            }
+        });
+    }
+
+    private updateCanvasSize(): void {
+        if (!this.canvas) {
+            return;
+        }
+        const { width, height } = CanvasDimensions;
+
+        const scale = Math.max(
+            1,
+            Math.floor(Math.min(window.innerWidth / width, window.innerHeight / height))
+        );
+
+        this.canvas.style.width = width * scale + "px";
+        this.canvas.style.height = height * scale + "px";
     }
 
     public getCanvas(): HTMLCanvasElement | null {
@@ -75,9 +129,9 @@ export default class Game {
         this.sceneManager.update(this.gameDt, t);
 
         if (!FAKE_LOW_FPS) {
-            requestAnimationFrame(() => this.update());
+            requestAnimationFrame(this.boundUpdate);
         } else {
-            setTimeout(() => this.update(), LOW_FPS_FRAME_DELAY);
+            setTimeout(this.boundUpdate, LOW_FPS_FRAME_DELAY);
         }
     }
 
@@ -93,15 +147,12 @@ export default class Game {
             if (this.showFps) {
                 this.context.save();
                 this.context.setTransform(1, 0, 0, 1, 0, 0);
-                this.context.fillStyle = "red";
-                this.context.textBaseline = "top";
-                this.context.font = "20px Arial";
-                this.context.fillText("" + this.currentFps, 5, 5);
+                Game.standardFont?.drawText(this.context, "" + this.currentFps, 5, 5, "green");
                 this.context.restore();
             }
         }
 
-        requestAnimationFrame(() => this.draw());
+        requestAnimationFrame(this.boundDraw);
     }
 
     private handleFps(time: number, lastTime: number) {

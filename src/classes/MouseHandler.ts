@@ -1,6 +1,13 @@
 import { getRelativeMouseCoordinates } from "./shared/util";
 
-
+/**
+ * The MouseHandler allows querying the mouse state at any point, including its key states as well as coordinates.
+ * Coordinates can be queried relative to several coordinate systems:
+ * - relative to canvas, in screen pixels (getCanvasPos)
+ * - relative to canvas, in canvas resolution (getScreenPos)
+ * - relative to canvas, between 0 and 1 in both dimensions (getRelativeCanvasPos)
+ * - relative to game world, if setCanvasTransform is updated accordingly when world cam is moved (getWorldPos)
+ */
 export default class MouseHandler {
 
     private target: HTMLElement = null;
@@ -46,8 +53,12 @@ export default class MouseHandler {
         return [ this.mouse.absX, this.mouse.absY ];
     }
 
+    public getScreenPos() {
+        return [ this.mouse.canvasX, this.mouse.canvasY ];
+    }
+
     public getRelativeCanvasPos() {
-        return [ this.mouse.canvasX / this.target.clientWidth, this.mouse.canvasY / this.target.clientHeight ];
+        return [ this.mouse.absX / this.target.clientWidth, this.mouse.absY / this.target.clientHeight ];
     }
 
     public getDown() {
@@ -64,8 +75,8 @@ export default class MouseHandler {
         const relativeMouseCoordinates = getRelativeMouseCoordinates(event, this.target);
         this.mouse.absX = relativeMouseCoordinates[0];
         this.mouse.absY = relativeMouseCoordinates[1];
-        this.mouse.canvasX = relativeMouseCoordinates[0] * this.target.clientWidth / this.target.offsetWidth;
-        this.mouse.canvasY = relativeMouseCoordinates[1] * this.target.clientHeight / this.target.offsetHeight;
+        this.mouse.canvasX = relativeMouseCoordinates[0] * (this.target as HTMLCanvasElement).width / this.target.offsetWidth;
+        this.mouse.canvasY = relativeMouseCoordinates[1] * (this.target as HTMLCanvasElement).height / this.target.offsetHeight;
         [this.mouse.x, this.mouse.y] = this.transformCoordinates(this.mouse.canvasX, this.mouse.canvasY);
     }
 

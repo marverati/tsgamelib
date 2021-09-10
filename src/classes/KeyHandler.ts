@@ -16,24 +16,39 @@ export default class KeyHandler {
         this.tick++;
     }
 
-    public get(key: string): boolean {
+    public get(key: string, caseSensitive = false): boolean {
         this.ensureExistence(key);
+        if (!this.keyStates[key].state && key.length === 1 && !caseSensitive) {
+            return this.get(this.getOtherCase(key), true);
+        }
         return this.keyStates[key].state;
     }
 
-    public getDown(key: string): boolean {
+    public getDown(key: string, caseSensitive = false): boolean {
         this.ensureExistence(key);
-        return this.keyStates[key].state && this.keyStates[key].tick >= this.tick - 1;
+        const result = this.keyStates[key].state && this.keyStates[key].tick >= this.tick - 1;
+        if (!result && key.length === 1 && !caseSensitive) {
+            return this.getDown(this.getOtherCase(key), true);
+        }
+        return result;
     }
 
-    public getUp(key: string): boolean {
+    public getUp(key: string, caseSensitive = false): boolean {
         this.ensureExistence(key);
-        return !this.keyStates[key].state && this.keyStates[key].tick >= this.tick - 1;
+        const result = !this.keyStates[key].state && this.keyStates[key].tick >= this.tick - 1;
+        if (!result && key.length === 1 && !caseSensitive) {
+            return this.getUp(this.getOtherCase(key), true);
+        }
+        return result;
     }
 
     public getChange(key: string): boolean {
         this.ensureExistence(key);
         return this.keyStates[key].tick === this.tick;
+    }
+
+    public getNext(): boolean {
+        return [" ", "Enter"].some(k => this.getDown(k));
     }
 
     protected registerEvents(target: HTMLElement): void {
@@ -65,6 +80,18 @@ export default class KeyHandler {
             };
             return true;
         }
+    }
+
+    private getOtherCase(key: string): string {
+        if (key.length === 1) {
+            const upper = key.toUpperCase();
+            if (key === upper) {
+                return key.toLowerCase();
+            } else {
+                return upper;
+            }
+        }
+        return "";
     }
 }
 

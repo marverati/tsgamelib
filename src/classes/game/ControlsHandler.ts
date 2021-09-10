@@ -1,6 +1,6 @@
 import Character from "./Character";
 import Vector2 from "../shared/Vector2";
-import SceneObject from "../SceneObject";
+import SceneObject from "./SceneObject";
 import GameScene from "./scenes/GameScene";
 import Scene from "../Scene";
 
@@ -32,10 +32,10 @@ export default class ControlsHandler extends SceneObject {
         this.player2 && this.control(this.player2, "ArrowUp", "ArrowLeft", "ArrowDown", "ArrowRight");
 
         // Temporary solution for bonding controls
-        if (this.getScene().getKeyHandler().getDown("q")) {
+        if (this.scene.getKeyHandler().getDown("q")) {
             this.attract();
         }
-        if (this.getScene().getKeyHandler().getDown("e")) {
+        if (this.scene.getKeyHandler().getDown("e")) {
             this.repell();
         }
 
@@ -56,8 +56,8 @@ export default class ControlsHandler extends SceneObject {
         matrix = matrix.translate(canvas.width / 2, canvas.height / 2);
         matrix = matrix.scale(cam.zoom, cam.zoom);
         matrix = matrix.translate(-cam.x, -cam.y);
-        (this.getScene() as GameScene).setCamera(matrix);
-        this.getScene().getMouseHandler().setCanvasTransform(canvas.width / 2 - cam.zoom * cam.x, canvas.height / 2 - cam.zoom * cam.y, cam.zoom, cam.zoom, 0);
+        (this.scene as GameScene).setCamera(matrix);
+        this.scene.getMouseHandler().setCanvasTransform(canvas.width / 2 - cam.zoom * cam.x, canvas.height / 2 - cam.zoom * cam.y, cam.zoom, cam.zoom, 0);
     }
 
     public getCameraPosition(): {x: number, y: number, zoom: number} {
@@ -83,7 +83,7 @@ export default class ControlsHandler extends SceneObject {
     }
 
     private control(player: Character, up: string, left: string, down: string, right: string): void {
-        const keys = this.getScene().getKeyHandler();
+        const keys = this.scene.getKeyHandler();
         const rl = (keys.get(right) ? 1 : 0) - (keys.get(left) ? 1 : 0);
         const jump = keys.getDown(up);
         const hold = keys.get(down);

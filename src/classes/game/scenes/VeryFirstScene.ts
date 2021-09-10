@@ -1,4 +1,3 @@
-import KeyHandler from "../../KeyHandler";
 import Scene from "../../Scene";
 
 const AUTO_SKIP = true;

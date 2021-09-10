@@ -1,4 +1,12 @@
+// import { Aseprite } from "./Aseprite";
 import { clamp } from "./shared/util";
+import { BitmapFont } from "./BitmapFont";
+
+export enum Fonts {
+    STANDARD_FONT = "assets/fonts/pixcelsior.font.json",
+    SMALL_FONT = "assets/fonts/smallFont.font.json",
+    HEADLINE_FONT = "assets/fonts/headline.font.json"
+}
 
 export default class Loader {
     // private images = [];
@@ -27,37 +35,71 @@ export default class Loader {
         }
     };
 
+    // public async loadAseprite(src: string,): Promise<Aseprite | null> {
+    //     this.count++;
+    //     return Aseprite.load(src)
+    //         .then(aseprite => {
+    //             this.total++;
+    //             this.update();
+    //             return aseprite;
+    //         }).catch(() => {
+    //             this.errors++;
+    //             this.total++;
+    //             this.update();
+    //             return null;
+    //         });
+    // };
+
+    public async loadFont(src: Fonts): Promise<BitmapFont> {
+        return BitmapFont.load(src)
+            .then(font => {
+                this.total++;
+                this.update();
+                return font;
+            }).catch(() => {
+                this.errors++;
+                this.total++;
+                this.update();
+                return null;
+            });
+    }
+
     public loadImage(src: string, frameCountX = 1, frameCountY = 1): HTMLImageElement {
         this.count++;
         const img = new Image();
-        console.log("Loading image");
         img.onload = () => {
-            console.log("loaded");
             this.total++;
             if (frameCountX > 1 || frameCountY > 1) {
-                // img.frameWidth = img.width / frameCountX;
-                // img.frameHeight = img.height / frameCountY;
+                // frameWidth/frameHeight typings in global.d.ts
+                img.frameWidth = img.width / frameCountX;
+                img.frameHeight = img.height / frameCountY;
             }
-            console.log("updating");
+            if (!img.name) {
+                img.name = this.getName(src);
+            }
             this.update();
-            console.log("done");
         };
         img.onerror = () => {
-            console.log("errored");
             this.errors++;
             this.total++;
             this.update();
         };
         img.src = src;
         if (frameCountX > 1 || frameCountY > 1) {
-            // img.frameCount = frameCountX * frameCountY;
-            // img.frameCountX = frameCountX;
-            // img.frameCountY = frameCountY;
-            // img.frameWidth = 1; // updated when loaded
-            // img.frameHeight = 1;
+            // frameCount typings in global.d.ts
+            img.frameCount = frameCountX * frameCountY;
+            img.frameCountX = frameCountX;
+            img.frameCountY = frameCountY;
+            img.frameWidth = img.frameWidth || 1; // updated when loaded
+            img.frameHeight = img.frameHeight || 1;
         }
         return img;
     };
+
+    private getName(src: string): string {
+        const p = Math.max(src.lastIndexOf("/"), src.lastIndexOf("\\"));
+        return src.substr(p + 1); 
+    }
 
     public loadAudio(soundData: Record<string, string>) {
         var sound = new Audio(soundData.src);
@@ -96,7 +138,6 @@ export default class Loader {
     public update() {
         if (this.allAdded) {
             this.progress = clamp(this.total / this.count, 0, 1);
-            console.log(this.total, " / ", this.count, " -> ", this.progress);
             if (this.total >= this.count) {
                 if (this.resolver) {
                     this.resolver();

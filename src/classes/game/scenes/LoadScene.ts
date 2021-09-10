@@ -3,18 +3,16 @@ import Scene from "../../Scene";
 
 export default class LoadScene extends Scene {
     private doneTime = Infinity;
-    private time = 0;
 
     public constructor() {
         super("LoadScene");
     }
 
     public onStart() {
-        this.getGame().loader.loadAll().then(() => this.doneTime = Math.max(0.8, this.time))
+        this.getGame().loader.loadAll().then(() => this.doneTime = Math.max(0.8, this.getTime()))
     }
 
     public draw(ctx: CanvasRenderingContext2D, opacity: number, time: number, dt: number): void {
-        this.time = time;
         ctx.globalAlpha = opacity;
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -30,7 +28,7 @@ export default class LoadScene extends Scene {
     }
 
     public update() {
-        if (this.time >= this.doneTime && this.hasControl()) {
+        if (this.getTime() >= this.doneTime && this.hasControl()) {
             this.fadeTo("GameScene");
         }
     }

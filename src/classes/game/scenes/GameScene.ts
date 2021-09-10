@@ -1,15 +1,31 @@
-import SceneObject from "../../SceneObject";
 import KeyHandler from "../../KeyHandler";
 import Scene from "../../Scene";
-import { ContextReplacementPlugin } from "webpack";
+import { exposeToWindow } from "../../shared/util";
+import ControlsHandler from "../ControlsHandler";
+import Level from "../Level";
+import Player from "../Player";
 
 
 export default class GameScene extends Scene {
     public keyHandler: KeyHandler;
     private camTransform: number[] | DOMMatrix = new DOMMatrix();
+    private controls: ControlsHandler = null;
+    private level: Level = null;
+    private players: Player[] = [];
 
     public constructor() {
         super("GameScene");
+        exposeToWindow({gameScene: this});
+    }
+
+    public setLevel(level: Level) {
+        this.level = level;
+        const players = level.getCharacters().filter(c => c instanceof Player);
+        this.players = players;
+        const controls = new ControlsHandler(this);
+        controls.setPlayers(players[0] ?? null, players[1] ?? null);
+        this.controls = controls;
+        exposeToWindow({level});
     }
 
     public load() {}
@@ -35,19 +51,24 @@ export default class GameScene extends Scene {
         }
 
         super.draw(ctx, opacity, time, dt);
+
+        this.level?.draw(ctx, time, dt);
+
         ctx.restore();
 
         // UI
         ctx.fillStyle = "darkgreen";
         ctx.font = "20px Arial";
         const worldPos = this.mouseHandler.getWorldPos();
-        const screenPos = this.mouseHandler.getCanvasPos();
+        const screenPos = this.mouseHandler.getScreenPos();
         const coords = (worldPos[0] << 0) + "," + (worldPos[1] << 0);
         ctx.fillText(coords, screenPos[0], screenPos[1]);
 
     }
 
     public update(dt: number, time: number) {
+        this.level?.update(dt, time);
+        this.controls.update(dt, time);
     }
 
     public setCamera(camTransform: number[] | DOMMatrix) {

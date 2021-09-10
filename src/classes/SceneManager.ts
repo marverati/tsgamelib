@@ -1,3 +1,4 @@
+import { clamp } from "./shared/util";
 import Game from "./Game";
 import { FakeKeyHandler } from "./KeyHandler";
 import { FakeMouseHandler } from "./MouseHandler";
@@ -12,6 +13,12 @@ type SceneData = {
     resolver: Function | null; // Promise resolve executed as soon as scene fades out
     fadeOutResolver: Function | null; // Promise resolve executed as soon as a single FadeOut has been executed
 }
+
+export enum FadeMode {
+    CROSS = "cross",
+    AFTER = "after",
+    IN = "in"
+};
 
 const DEFAULT_TRANSITION_DURATION = 0.5;
 
@@ -59,9 +66,11 @@ export default class SceneManager {
                     }
                 }
             }
-            const sceneDt = scene.scaleDtWithOpacity() ? dt * data.opacity : dt;
-            data.dt = sceneDt;
-            data.time += sceneDt;
+            const sceneDt = scene.scaleDtWithOpacity() ? dt * clamp(data.opacity, 0, 1) : dt;
+            if (!this.game.isPaused) {
+                data.dt = sceneDt;
+                data.time += sceneDt;
+            }
             const keyHandler = (scene === this.focusedScene) ? this.game.keyHandler : this.fakeKeyHandler;
             const mouseHandler = (scene === this.focusedScene) ? this.game.mouseHandler : this.fakeMouseHandler;
             scene.updateInternal(sceneDt, data.time, keyHandler, mouseHandler);
@@ -72,7 +81,7 @@ export default class SceneManager {
         for (const scene of this.scenes) {
             const data = this.getData(scene);
             ctx.save();
-            const opacity = scene.getOpacityInterpolation(data.opacity);
+            const opacity = scene.getOpacityInterpolation(clamp(data.opacity, 0, 1));
             scene.draw(ctx, opacity, data.time, data.dt);
             ctx.restore();
         }
@@ -92,22 +101,25 @@ export default class SceneManager {
         return this.scenes.includes(scene);
     }
 
+    public getFocusedScene(): Scene {
+        return this.focusedScene;
+    }
+
     public openOnTop(scene: Scene | string, duration?: number): Promise<void> {
         scene = this.getScene(scene);
-        this.enable(scene, duration);
         this.focusedScene = scene;
+        this.enable(scene, duration);
         return new Promise((resolve) => {
             const data = this.getData(scene as Scene);
             data.resolver = resolve;
         });
     }
 
-    public switchTo(scene: Scene | string, duration?: number): Promise<void> {
+    public switchTo(scene: Scene | string, duration?: number | null, fadeMode?: FadeMode): Promise<void> {
         scene = this.getScene(scene);
-        console.log("Starting scene ", scene);
-        this.enable(scene, duration);
-        this.focusedScene && this.disable(this.focusedScene, duration);
+        this.focusedScene && this.disable(this.focusedScene, duration ?? DEFAULT_TRANSITION_DURATION, fadeMode);
         this.focusedScene = scene;
+        this.enable(scene, duration, fadeMode);
         return new Promise((resolve) => {
             const data = this.getData(scene as Scene);
             data.resolver = resolve;
@@ -135,23 +147,45 @@ export default class SceneManager {
         return scene;
     }
 
-    private disable(scene: Scene, duration = DEFAULT_TRANSITION_DURATION) {
+    public disable(scene: Scene, duration = DEFAULT_TRANSITION_DURATION, fadeMode = FadeMode.CROSS) {
         const data = this.getData(scene);
-        if (data.opacity >= 1 || data.fadeDirection >= 0) {
+        if (data.fadeDirection >= 0) {
             scene.onFadeOut();
             data.resolver && data.resolver();
         }
         data.fadeDirection = -1;
-        data.fadeDuration = duration;
+        switch (fadeMode) {
+            case FadeMode.CROSS:
+                data.fadeDuration = duration;
+                break;
+            case FadeMode.IN:
+                data.fadeDuration = duration;
+                data.opacity = 2;
+                break;
+            case FadeMode.AFTER:
+                data.fadeDuration = duration / 2;
+                break;
+        }
     }
 
-    private enable(scene: Scene, duration = DEFAULT_TRANSITION_DURATION) {
+    private enable(scene: Scene, duration = DEFAULT_TRANSITION_DURATION, fadeMode = FadeMode.CROSS) {
         const data = this.getData(scene);
-        if (data.opacity <= 0 || data.fadeDirection <= 0) {
+        if (data.fadeDirection <= 0) {
             scene.onStart();
         }
         data.fadeDirection = 1;
-        data.fadeDuration = duration;
+        switch (fadeMode) {
+            case FadeMode.CROSS:
+                data.fadeDuration = duration;
+                break;
+            case FadeMode.IN:
+                data.fadeDuration = duration / 2;
+                break;
+            case FadeMode.AFTER:
+                data.fadeDuration = duration;
+                data.opacity = -1;
+                break;
+        }
     }
 
     private disableNow(scene: Scene) {
@@ -179,6 +213,4 @@ export default class SceneManager {
         }
         return this.sceneData.get(scene);
     }
-
-
 }

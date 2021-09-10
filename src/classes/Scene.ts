@@ -1,28 +1,21 @@
+import Game from "./Game";
 import KeyHandler from "./KeyHandler";
 import Loader from "./Loader";
 import MouseHandler from "./MouseHandler";
-import SceneManager from "./SceneManager";
-import SceneObject from "./SceneObject";
+import SceneManager, { FadeMode } from "./SceneManager";
 
 
 export default abstract class Scene {
     protected manager: SceneManager | null = null;
-    protected sceneObjects: SceneObject[] = [];
     protected keyHandler: KeyHandler;
     protected mouseHandler: MouseHandler;
+    private time = 0;
 
     public constructor(public readonly name: string) {
     }
 
     public setManager(manager: SceneManager) {
         this.manager = manager;
-    }
-
-    public register(obj: SceneObject): void {
-        // TODO evaluate whether this hurts performance
-        if (!this.sceneObjects.includes(obj)) {
-            this.sceneObjects.push(obj);
-        }
     }
 
     public getKeyHandler() {
@@ -37,30 +30,31 @@ export default abstract class Scene {
     public load(loader: Loader) {}
 
     public draw(ctx: CanvasRenderingContext2D, opacity: number, time: number, dt: number): void {
-        // Draw content
-        for (const obj of this.sceneObjects) {
-            obj.draw(ctx, time, dt);
-        }
     }
 
     public updateInternal(dt: number, time: number, keyHandler: KeyHandler, mouseHandler: MouseHandler) {
+        this.time = time;
         this.mouseHandler = mouseHandler;
         this.keyHandler = keyHandler;
         this.update(dt, time);
-        // Update content
-        for (const obj of this.sceneObjects) {
-            obj.update(dt, time);
-        }
     }
 
     public update(dt: number, time: number) {}
 
     public getGame() {
-        return this.manager.game;
+        if (this.manager && this.manager.game) {
+            return this.manager.game;
+        } else {
+            return Game.getInstance();
+        }
     }
 
     public hasControl() {
         return !this.manager || this.manager.isSceneActive(this);
+    }
+
+    public getTime(): number {
+        return this.time;
     }
 
     // *** Scene Customization ***
@@ -74,9 +68,9 @@ export default abstract class Scene {
     }
 
     // *** Transitions ***
-    public fadeTo(scene: string | Scene, duration?: number): Promise<void> {
+    public fadeTo(scene: string | Scene, duration?: number | null, fadeMode?: FadeMode): Promise<void> {
         if (this.manager && this.hasControl()) {
-            return this.manager.switchTo(scene, duration);
+            return this.manager.switchTo(scene, duration, fadeMode);
         }
         return Promise.reject();
     }

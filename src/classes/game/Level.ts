@@ -3,7 +3,7 @@ import Character from "./Character";
 import Rect from "../shared/Rect";
 import Vector2 from "../shared/Vector2";
 import Game, { loadMedia } from "../Game";
-import SceneObject from "../SceneObject";
+import SceneObject from "./SceneObject";
 import Loader from "../Loader";
 import Scene from "../Scene";
 
