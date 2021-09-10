@@ -7,11 +7,11 @@ TODO
 [X] Scene handling
 [X] Mouse handler
 [X] Music manager
-[/] Game object state representation (enabling saving of progress)
-[ ] Sound Manager
-[ ] Transitions
-[ ] rendering util (incl. spritesheets)
-[ ] Camera
-[ ] game time relative setTimeout and setInterval (per scene?)
+[X] game time relative setTimeout and setInterval (per scene?)
+[/] Sound Manager
+[/] rendering util (incl. spritesheets)
 [ ] Allow scenes to provide payload when fading to other scenes (and receiving it onStart)
 [ ] Refactor BitmapFonts to not be loaded (or even known) within Game
+[ ] Transitions
+[ ] Camera class
+[ ] Game object state representation (enabling saving of progress)
