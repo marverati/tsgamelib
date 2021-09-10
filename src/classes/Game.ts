@@ -6,6 +6,7 @@ import MouseHandler from "./MouseHandler";
 import SceneManager from "./SceneManager";
 import { BitmapFont } from "./BitmapFont";
 import { Fonts } from "./Loader";
+import MusicManager from "./MusicManager";
 
 const MAX_DT = 80;
 
@@ -36,6 +37,7 @@ export default class Game {
     public readonly sceneManager = new SceneManager(this);
     public readonly keyHandler = new KeyHandler();
     public readonly mouseHandler = new MouseHandler();
+    public readonly musicManager = new MusicManager();
     // public readonly soundManager = SoundManager.getInstance();
 
     public readonly loader = new Loader();
@@ -127,6 +129,7 @@ export default class Game {
 
         this.keyHandler.update(t);
         this.sceneManager.update(this.gameDt, t);
+        this.musicManager.update(this.gameDt, t);
 
         if (!FAKE_LOW_FPS) {
             requestAnimationFrame(this.boundUpdate);

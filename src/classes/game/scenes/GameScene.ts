@@ -1,12 +1,15 @@
+import { loadMedia } from "../../Game";
 import KeyHandler from "../../KeyHandler";
+import Loader from "../../Loader";
 import Scene from "../../Scene";
 import { exposeToWindow } from "../../shared/util";
 import ControlsHandler from "../ControlsHandler";
 import Level from "../Level";
 import Player from "../Player";
 
-
+@loadMedia
 export default class GameScene extends Scene {
+    private static musics: HTMLAudioElement[];
     public keyHandler: KeyHandler;
     private camTransform: number[] | DOMMatrix = new DOMMatrix();
     private controls: ControlsHandler = null;
@@ -28,7 +31,17 @@ export default class GameScene extends Scene {
         exposeToWindow({level});
     }
 
-    public load() {}
+    public static async load(loader: Loader) {
+        this.musics = [
+            loader.loadAudio({src: "https://play.friendlyfiregame.com/assets/music/cerulean-expanse.ogg"}),
+            loader.loadAudio({src: "https://play.friendlyfiregame.com/assets/music/radio.ogg"})
+        ]
+    }
+
+    public onStart() {
+        this.getGame().musicManager.loop(GameScene.musics[0]);
+        setTimeout(() => this.getGame().musicManager.playOnce(GameScene.musics[1]), 7000);
+    }
 
     public draw(ctx: CanvasRenderingContext2D, opacity: number, time: number, dt: number): void {
         if (opacity < 1) {

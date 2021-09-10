@@ -6,8 +6,10 @@ TODO
 [X] Loading media
 [X] Scene handling
 [X] Mouse handler
+[X] Music manager
 [/] Game object state representation (enabling saving of progress)
+[ ] Sound Manager
 [ ] Transitions
 [ ] rendering util (incl. spritesheets)
-[ ] Music manager
 [ ] Camera
+[ ] game time relative setTimeout and setInterval (per scene?)
