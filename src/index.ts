@@ -5,6 +5,8 @@ import Player from "./classes/game/Player";
 import VeryFirstScene from "./classes/game/scenes/VeryFirstScene";
 import LoadScene from "./classes/game/scenes/LoadScene";
 import GameScene from "./classes/game/scenes/GameScene";
+import WinScene from "./classes/game/scenes/WinScene";
+import LoseScene from "./classes/game/scenes/LoseScene";
 import { exposeToWindow } from "./classes/shared/util";
 
 export let game: Game;
@@ -18,6 +20,8 @@ window.addEventListener("load", () => {
         .add(new VeryFirstScene())
         .add(new LoadScene())
         .add(gameScene = new GameScene())
+        .add(new WinScene())
+        .add(new LoseScene())
         .switchTo("VeryFirstScene", 1)
     game.loader.loadAll().then(() => {
         buildLevel(gameScene)
@@ -27,15 +31,29 @@ window.addEventListener("load", () => {
 
 
 function buildLevel(gameScene: GameScene): Level {
-    const level = new Level(gameScene, 2000, 1500);
-    level.addBlock(400, 1400, 200, 200);
-    level.addBlock(500, 1310, 500, 200);
-    level.addBlock(1200, 1310, 200, 200);
-    (window as any).elevator = level.addBlock(new MovingBlock(200, 1300, 260, 20, 500).addTarget(200, 1000).setMovement(Movements.SIN));
-    level.addBlock(new MovingBlock(600, 1290, 260, 20, 250).addTarget(1200, 1290).addTarget(1200, 800).addTarget(1200, 1190).setMovement(Movements.SIN).setPause(1));
-    const p1 = new Player(100, 1400), p2 = new Player(200, 1400);
-    exposeToWindow({ "player1": p1, "player2": p2 });
-    level.addCharacters([p1, p2]);
+    const level = new Level(gameScene, 500, 3000);
+
+    const BLOCK_W = 100
+    const BLOCK_H = 50
+
+    for (let i = 0; i < 100; i+=3) {
+        level.addBlock(i*100 % 500, 2800 - i*200, BLOCK_W, BLOCK_H);
+        level.addBlock((i+1)*100 % 500, 2800 - (i+1)*200, BLOCK_W, BLOCK_H);
+
+        level.addBlock(
+            new MovingBlock(-BLOCK_W, 2800 - (i+2)*200, BLOCK_W, BLOCK_H)
+                //.addTarget(-B, 2800 - (i+2)*200)
+                .addTarget(500+BLOCK_W, 2800 - (i+2)*200)
+                .setMovement(Movements.SIN)
+                .setPause(1)
+        );
+    }
+
+    const p1 = new Player(250, 3000);
+
+    exposeToWindow({ "player1": p1 });
+    level.addCharacters([p1]);
     gameScene.setLevel(level)
+
     return level;
 }

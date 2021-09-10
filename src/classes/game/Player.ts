@@ -2,8 +2,8 @@ import Character from "./Character";
 
 const WIDTH = 40;
 const HEIGHT = 36;
-const SPEED = 220;
-const JUMP_POWER = 460;
+const SPEED = 350;
+const JUMP_POWER = 700;
 
 export default class Player extends Character {
 

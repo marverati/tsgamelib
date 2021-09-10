@@ -63,12 +63,19 @@ export default class GameScene extends Scene {
         const screenPos = this.mouseHandler.getScreenPos();
         const coords = (worldPos[0] << 0) + "," + (worldPos[1] << 0);
         ctx.fillText(coords, screenPos[0], screenPos[1]);
-
     }
 
     public update(dt: number, time: number) {
         this.level?.update(dt, time);
         this.controls.update(dt, time);
+
+        if (this.players[0].getPos().y < 100) {
+            this.fadeTo("WinScene")
+        }
+
+        if (this.players[0].getPos().y > 3000-time*70 + this.controls.getGame().getCanvas().height/2) {
+            this.fadeTo("LoseScene")
+        }
     }
 
     public setCamera(camTransform: number[] | DOMMatrix) {

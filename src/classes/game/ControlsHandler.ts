@@ -39,19 +39,20 @@ export default class ControlsHandler extends SceneObject {
             this.repell();
         }
 
-        this.updateCamera();
+        this.updateCamera(time);
     }
 
     public draw(): void {}
 
-    public updateCamera(): void {
+    public updateCamera(time : number): void {
         const canvas = this.getGame().getCanvas();
         if (!canvas) {
             return;
         }
 
         // TODO polyfill for IE users?
-        const cam = this.getCameraPosition();
+        // const cam = this.getCameraPosition();
+        const cam = { x: 250, y: 3000-time*70, zoom: 1 }
         let matrix = new DOMMatrix();
         matrix = matrix.translate(canvas.width / 2, canvas.height / 2);
         matrix = matrix.scale(cam.zoom, cam.zoom);
