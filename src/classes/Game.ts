@@ -116,6 +116,14 @@ export default class Game {
         return this.canvas;
     }
 
+    public getAppTime(): number {
+        return this.appTime;
+    }
+
+    public getGameTime(): number {
+        return this.gameTime;
+    }
+
     public update(): void {
         // General time handling
         const t = performance.now()

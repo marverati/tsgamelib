@@ -33,14 +33,12 @@ export default class GameScene extends Scene {
 
     public static async load(loader: Loader) {
         this.musics = [
-            loader.loadAudio({src: "https://play.friendlyfiregame.com/assets/music/cerulean-expanse.ogg"}),
             loader.loadAudio({src: "https://play.friendlyfiregame.com/assets/music/radio.ogg"})
         ]
     }
 
     public onStart() {
-        this.getGame().musicManager.loop(GameScene.musics[0]);
-        setTimeout(() => this.getGame().musicManager.playOnce(GameScene.musics[1]), 7000);
+        this.getGame().musicManager.playOnce(GameScene.musics[0], 1);
     }
 
     public draw(ctx: CanvasRenderingContext2D, opacity: number, time: number, dt: number): void {

@@ -1,13 +1,23 @@
+import { loadMedia } from "../../Game";
+import Loader from "../../Loader";
 import Scene from "../../Scene";
 
 const AUTO_SKIP = false;
+@loadMedia
 export default class VeryFirstScene extends Scene {
+    private static music: HTMLAudioElement;
 
     public constructor() {
         super("VeryFirstScene");
     }
 
-    public load() {}
+    public static load(loader: Loader) {
+        this.music = loader.loadAudio({src: "https://play.friendlyfiregame.com/assets/music/cerulean-expanse.ogg"});
+    }
+
+    public onStart() {
+        this.getMusicManager().loop(VeryFirstScene.music);
+    }
 
     public draw(ctx: CanvasRenderingContext2D, opacity: number, time: number, dt: number): void {
         ctx.translate(0, -400 * (1 - opacity));

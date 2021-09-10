@@ -13,3 +13,5 @@ TODO
 [ ] rendering util (incl. spritesheets)
 [ ] Camera
 [ ] game time relative setTimeout and setInterval (per scene?)
+[ ] Allow scenes to provide payload when fading to other scenes (and receiving it onStart)
+[ ] Refactor BitmapFonts to not be loaded (or even known) within Game

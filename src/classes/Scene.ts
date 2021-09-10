@@ -53,8 +53,12 @@ export default abstract class Scene {
         return false;
     }
 
+    public clearAllTimeouts(): void {
+        this.timeouts = [];
+    }
+
     /** Note: when implementing load method, make sure to add @loadMedia decorator to your scene class */
-    public load(loader: Loader) {}
+    public static load(loader: Loader) {}
 
     public draw(ctx: CanvasRenderingContext2D, opacity: number, time: number, dt: number): void {
     }
@@ -162,8 +166,8 @@ class SceneTimeout {
 
     public update(time: number) {
         if (time >= this.triggerTime) {
-            this.callback(this.triggerCount++);
-            if (this.triggerCount >= this.maxTriggerCount) {
+            const remove = this.callback(this.triggerCount++);
+            if (this.triggerCount >= this.maxTriggerCount || remove && remove === 'REMOVE') {
                 return true;
             } else {
                 // Trigger again in future
