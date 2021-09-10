@@ -6,10 +6,10 @@ This project attempts to make game development using Typescript & the HTML Canva
 
 tsgamelib builds on a number of concepts to make the game developer's life easier:
 - main loop with draw and update cycle
-- stage system to allow separation of concerns between different parts of the game
+- scene system to allow separation of concerns between different parts of the game
 - standardized media loading pipeline to ensure all required media is loaded initially and available when needed
 - keyboard & mouse state can be queried at any time from within the main loop, rather than listening to events
-- time system to allow stage dependent time, different speeds, framerate independence and pausing
+- time system to allow scene dependent time, different speeds, framerate independence and pausing
 
 Furthermore, some widely required features are provided as well.
 

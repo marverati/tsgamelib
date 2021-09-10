@@ -1,6 +1,6 @@
 import Scene from "../../Scene";
 
-const AUTO_SKIP = true;
+const AUTO_SKIP = false;
 export default class VeryFirstScene extends Scene {
 
     public constructor() {
