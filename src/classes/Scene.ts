@@ -10,6 +10,7 @@ export default abstract class Scene {
     protected keyHandler: KeyHandler;
     protected mouseHandler: MouseHandler;
     private time = 0;
+    private timeouts: SceneTimeout[] = [];
 
     public constructor(public readonly name: string) {
     }
@@ -26,6 +27,32 @@ export default abstract class Scene {
         return this.mouseHandler;
     }
 
+    public getMusicManager() {
+        return this.getGame().musicManager;
+    }
+
+    public setTimeout(callback: Function, delayInSeconds = 0): number {
+        const timeout = new SceneTimeout(callback, this.getTime(), delayInSeconds, false);
+        this.timeouts.push(timeout);
+        return timeout.id;
+    }
+
+    public setInterval(callback: Function, delayInSeconds: number, triggerCount?: number): number {
+        const timeout = new SceneTimeout(callback, this.getTime(), delayInSeconds, true);
+        if (triggerCount) { timeout.setTriggerCount(triggerCount); }
+        this.timeouts.push(timeout);
+        return timeout.id;
+    }
+
+    public clearTimeout(id: number): boolean {
+        const index = this.timeouts.findIndex(t => t.id === id);
+        if (index) {
+            this.timeouts.splice(index, 1);
+            return true;
+        }
+        return false;
+    }
+
     /** Note: when implementing load method, make sure to add @loadMedia decorator to your scene class */
     public load(loader: Loader) {}
 
@@ -36,7 +63,17 @@ export default abstract class Scene {
         this.time = time;
         this.mouseHandler = mouseHandler;
         this.keyHandler = keyHandler;
+        this.updateTimeouts(dt, time);
         this.update(dt, time);
+    }
+
+    private updateTimeouts(dt: number, time: number) {
+        for (let i = this.timeouts.length - 1; i >= 0; i--) {
+            const remove = this.timeouts[i].update(time);
+            if (remove) {
+                this.timeouts.splice(i, 1);
+            }
+        }
     }
 
     public update(dt: number, time: number) {}
@@ -98,4 +135,44 @@ export default abstract class Scene {
 
     public onEnd() {}
 
+}
+
+
+let timeoutCounter = 0;
+
+class SceneTimeout {
+    public id: number;
+    public delay: number;
+    public triggerTime: number;
+    public callback: Function;
+    private triggerCount = 0;
+    private maxTriggerCount = Infinity;
+
+    public constructor(callback: Function, time: number, delay: number, isInterval = false) {
+        this.callback = callback;
+        this.delay = delay;
+        this.triggerTime = time + delay;
+        this.id = timeoutCounter++;
+        this.maxTriggerCount = isInterval ? Infinity : 1;
+    }
+
+    public setTriggerCount(count: number) {
+        this.maxTriggerCount = count;
+    }
+
+    public update(time: number) {
+        if (time >= this.triggerTime) {
+            this.callback(this.triggerCount++);
+            if (this.triggerCount >= this.maxTriggerCount) {
+                return true;
+            } else {
+                // Trigger again in future
+                this.triggerTime += this.delay;
+                if (this.triggerTime <= time) {
+                    this.triggerTime = time + this.delay;
+                }
+            }
+        }
+        return false;
+    }
 }

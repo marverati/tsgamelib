@@ -18,5 +18,25 @@ Furthermore, some widely required features are provided as well.
 The features provided by tsgamelib include:
 - bitmap fonts
 - simple spritesheet support
+- music manager
 - sound manager (TODO)
-- music manager (TODO)
+
+## Main Loop
+
+## Scene System
+
+## Media Loading
+
+## Keyboard & Mouse Handling
+
+## Time System
+
+## Timeouts & Intervals
+
+## Bitmap Fonts
+
+## Spritesheets
+
+## MusicManager
+
+## SoundManager
