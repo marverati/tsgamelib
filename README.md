@@ -11,6 +11,23 @@ Also note that the provided `cheatCheet.md` file is meant for developers who are
 working on a game using tsgamelib. It contains the most fundamental rules and heuristics
 in much more concise form than this rather extensive README.
 
+## How to Run
+
+Requirements:
+- node installed
+- npm installed
+- repository checked out locally (master branch)
+
+Steps for local development:
+- inside local repository run `npm install`
+- run `npm start`
+- open http://localhost:3000/ in your browser
+
+You'll then see the small example game that comes with the framework. Any changes to the code files should
+automatically propagate to the browser window and force the page to reload.
+
+If you want to build for production instead of running locally, run `npm run build`.
+
 ## Concepts
 
 tsgamelib builds on a number of proven concepts to streamline the creation of video games.
