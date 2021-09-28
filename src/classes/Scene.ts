@@ -117,8 +117,21 @@ export default abstract class Scene {
 
     // *** Scene Customization ***
 
-    public scaleDtWithOpacity() {
-        return true;
+    /**
+     * Internal function that determines how time behaves for the scene based on its opacity. Most of the time this
+     * function should return either 0 or 1. Deviations may happen during scene transitions.
+     *
+     * @param opacity - The scene's own opacity, a value between 0 and 1 (where 1 means fully visible).
+     * @param focusedSceneOpacity - If a different scene than this one has focus, this value will be that
+     *                              scene's opacity. If the scene itself has focus, this value will be 0.
+     * @returns The active time factor in the given moment. Should usually be between 0 and 1. Negative
+     *          values will externally be corrected to 0.
+     */
+    public getTimeFactorFromOpacity(opacity: number, focusedSceneOpacity: number): number {
+        return opacity - focusedSceneOpacity; // only advance time while scene has focus, with smooth transitions
+        // return opacity; // advance time when scene is running, no matter if in foreground or background, with smooth fade-in
+        // return 1; // advance time when scene is running, no matter if in foreground or background, without fade
+        // return opacity - 0.9 * focusedSceneOpacity; // run in slow motion when not in focus
     }
 
     public getOpacityInterpolation(p: number): number {

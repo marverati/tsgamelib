@@ -68,7 +68,8 @@ export default class SceneManager {
                 }
             }
             const opacityDiff = (scene === this.focusedScene) ? data.opacity : (data.opacity - focusedSceneOpacity);
-            const sceneDt = scene.scaleDtWithOpacity() ? dt * clamp(opacityDiff, 0, 1) : dt;
+            const timeFactor = scene.getTimeFactorFromOpacity(data.opacity, (scene === this.focusedScene) ? 0 : focusedSceneOpacity);
+            const sceneDt = dt * Math.max(timeFactor, 0);
             if (!this.game.isPaused) {
                 data.dt = sceneDt;
                 data.time += sceneDt;
