@@ -33,7 +33,7 @@ export default class Loader {
     private allAdded = false;
     private resolver: Function = null;
     private resolvePromise: Promise<void> = null;
-    private genericJobs: GenericJob[];
+    private genericJobs: GenericJob[] = [];
     private nextGenericJobTimeout = 0;
 
     public constructor() {}
