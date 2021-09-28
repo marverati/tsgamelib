@@ -43,6 +43,7 @@ export default class SceneManager {
             const data = this.getData(scene);
             return data.opacity > 0 || data.fadeDirection > 0 ;
         });
+        const focusedSceneOpacity = this.focusedScene?.getOpacity() || 0;
         for (const scene of this.scenes) {
             const data = this.getData(scene);
             if (data.fadeDirection !== 0) {
@@ -66,7 +67,8 @@ export default class SceneManager {
                     }
                 }
             }
-            const sceneDt = scene.scaleDtWithOpacity() ? dt * clamp(data.opacity, 0, 1) : dt;
+            const opacityDiff = (scene === this.focusedScene) ? data.opacity : (data.opacity - focusedSceneOpacity);
+            const sceneDt = scene.scaleDtWithOpacity() ? dt * clamp(opacityDiff, 0, 1) : dt;
             if (!this.game.isPaused) {
                 data.dt = sceneDt;
                 data.time += sceneDt;
@@ -82,7 +84,7 @@ export default class SceneManager {
             const data = this.getData(scene);
             ctx.save();
             const opacity = scene.getOpacityInterpolation(clamp(data.opacity, 0, 1));
-            scene.draw(ctx, opacity, data.time, data.dt);
+            scene.drawInternal(ctx, opacity, data.time, data.dt);
             ctx.restore();
         }
     }
@@ -129,6 +131,7 @@ export default class SceneManager {
     public fadeOut(scene: Scene | string, duration?: number): Promise<void> {
         scene = this.getScene(scene);
         this.disable(scene, duration);
+        this.unfocusScene(scene);
         return new Promise((resolve) => {
             const data = this.getData(scene as Scene);
             data.fadeOutResolver = resolve;
@@ -192,6 +195,10 @@ export default class SceneManager {
         const data = this.getData(scene);
         data.fadeDirection = -1;
         data.opacity = 0;
+        this.unfocusScene(scene);
+    }
+
+    private unfocusScene(scene: Scene) {
         if (scene === this.focusedScene) {
             const remaining = this.scenes.filter(s => s !== scene);
             this.focusedScene = remaining[remaining.length - 1];

@@ -6,6 +6,7 @@ import VeryFirstScene from "./classes/game/scenes/VeryFirstScene";
 import LoadScene from "./classes/game/scenes/LoadScene";
 import GameScene from "./classes/game/scenes/GameScene";
 import { exposeToWindow } from "./classes/shared/util";
+import PauseScene from "./classes/game/scenes/PauseScene";
 
 export let game: Game;
 
@@ -18,6 +19,7 @@ window.addEventListener("load", () => {
         .add(new VeryFirstScene())
         .add(new LoadScene())
         .add(gameScene = new GameScene())
+        .add(new PauseScene())
         .switchTo("VeryFirstScene", 1)
     game.loader.loadAll().then(() => {
         buildLevel(gameScene)

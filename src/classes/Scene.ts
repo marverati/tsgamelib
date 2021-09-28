@@ -16,8 +16,9 @@ export default abstract class Scene {
     protected manager: SceneManager | null = null;
     protected keyHandler: KeyHandler;
     protected mouseHandler: MouseHandler;
-    private time = 0;
-    private timeouts: SceneTimeout[] = [];
+    protected time = 0;
+    protected timeouts: SceneTimeout[] = [];
+    protected opacity = 0;
 
     public constructor(public readonly name: string) {
     }
@@ -36,6 +37,10 @@ export default abstract class Scene {
 
     public getMusicManager() {
         return this.getGame().musicManager;
+    }
+
+    public getOpacity() {
+        return this.opacity;
     }
 
     public setTimeout(callback: Function, delayInSeconds = 0): number {
@@ -70,6 +75,11 @@ export default abstract class Scene {
     public draw(ctx: CanvasRenderingContext2D, opacity: number, time: number, dt: number): void {
     }
 
+    public drawInternal(ctx: CanvasRenderingContext2D, opacity: number, time: number, dt: number): void {
+        this.opacity = opacity;
+        this.draw(ctx, opacity, time, dt);
+    }
+
     public updateInternal(dt: number, time: number, keyHandler: KeyHandler, mouseHandler: MouseHandler) {
         this.time = time;
         this.mouseHandler = mouseHandler;
@@ -77,6 +87,8 @@ export default abstract class Scene {
         this.updateTimeouts(dt, time);
         this.update(dt, time);
     }
+
+    public update(dt: number, time: number) {}
 
     private updateTimeouts(dt: number, time: number) {
         for (let i = this.timeouts.length - 1; i >= 0; i--) {
@@ -86,8 +98,6 @@ export default abstract class Scene {
             }
         }
     }
-
-    public update(dt: number, time: number) {}
 
     public getGame() {
         if (this.manager && this.manager.game) {

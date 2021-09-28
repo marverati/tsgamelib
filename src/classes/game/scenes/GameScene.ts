@@ -80,6 +80,9 @@ export default class GameScene extends Scene {
     public update(dt: number, time: number) {
         this.level?.update(dt, time);
         this.controls.update(dt, time);
+        if (this.getKeyHandler().getDown("Escape") && this.hasControl()) {
+            this.fadeOnTop("PauseScene", { duration: 0.25 });
+        }
     }
 
     public setCamera(camTransform: number[] | DOMMatrix) {
