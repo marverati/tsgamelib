@@ -4,6 +4,13 @@ import Loader from "./Loader";
 import MouseHandler from "./MouseHandler";
 import SceneManager, { FadeMode } from "./SceneManager";
 
+export type ScenePayload = Object;
+
+export type SceneTransitionOptions = {
+    duration?: number;
+    fadeMode?: FadeMode;
+    payload?: ScenePayload;
+}
 
 export default abstract class Scene {
     protected manager: SceneManager | null = null;
@@ -109,16 +116,16 @@ export default abstract class Scene {
     }
 
     // *** Transitions ***
-    public fadeTo(scene: string | Scene, duration?: number | null, fadeMode?: FadeMode): Promise<void> {
+    public fadeTo(scene: string | Scene, options?: SceneTransitionOptions): Promise<void> {
         if (this.manager && this.hasControl()) {
-            return this.manager.switchTo(scene, duration, fadeMode);
+            return this.manager.switchTo(scene, options?.duration, options?.fadeMode, options?.payload);
         }
         return Promise.reject();
     }
 
-    public fadeOnTop(scene: string | Scene, duration?: number): Promise<void> {
+    public fadeOnTop(scene: string | Scene, options?: SceneTransitionOptions): Promise<void> {
         if (this.manager && this.hasControl()) {
-            return this.manager.openOnTop(scene, duration);
+            return this.manager.openOnTop(scene, options?.duration, options?.payload);
         }
         return Promise.reject();
     }
@@ -131,7 +138,7 @@ export default abstract class Scene {
     }
 
     // *** Lifecycle hooks ***
-    public onStart() {}
+    public onStart(payload?: Object) {}
 
     public onFadedIn() {}
 

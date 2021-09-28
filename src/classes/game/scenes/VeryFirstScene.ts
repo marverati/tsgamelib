@@ -33,7 +33,7 @@ export default class VeryFirstScene extends Scene {
     public update(dt: number, time: number) {
         if (this.keyHandler.getDown("Enter") || AUTO_SKIP && time > 0.5) {
             if (this.hasControl()) {
-                this.fadeTo("LoadScene");
+                this.fadeTo("LoadScene", {payload: {title: "Loading Game..."}});
             }
         }
     }

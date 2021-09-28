@@ -8,9 +8,9 @@ TODO
 [X] Mouse handler
 [X] Music manager
 [X] game time relative setTimeout and setInterval (per scene?)
+[X] Allow scenes to provide payload when fading to other scenes (and receiving it onStart)
 [/] Sound Manager
 [/] rendering util (incl. spritesheets)
-[ ] Allow scenes to provide payload when fading to other scenes (and receiving it onStart)
 [ ] Refactor BitmapFonts to not be loaded (or even known) within Game
 [ ] Transitions
 [ ] Camera class

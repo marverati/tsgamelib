@@ -105,21 +105,21 @@ export default class SceneManager {
         return this.focusedScene;
     }
 
-    public openOnTop(scene: Scene | string, duration?: number): Promise<void> {
+    public openOnTop(scene: Scene | string, duration?: number, payload?: Object): Promise<void> {
         scene = this.getScene(scene);
         this.focusedScene = scene;
-        this.enable(scene, duration);
+        this.enable(scene, duration, FadeMode.CROSS, payload);
         return new Promise((resolve) => {
             const data = this.getData(scene as Scene);
             data.resolver = resolve;
         });
     }
 
-    public switchTo(scene: Scene | string, duration?: number | null, fadeMode?: FadeMode): Promise<void> {
+    public switchTo(scene: Scene | string, duration?: number | null, fadeMode?: FadeMode, payload?: Object): Promise<void> {
         scene = this.getScene(scene);
         this.focusedScene && this.disable(this.focusedScene, duration ?? DEFAULT_TRANSITION_DURATION, fadeMode);
         this.focusedScene = scene;
-        this.enable(scene, duration, fadeMode);
+        this.enable(scene, duration, fadeMode, payload);
         return new Promise((resolve) => {
             const data = this.getData(scene as Scene);
             data.resolver = resolve;
@@ -168,10 +168,10 @@ export default class SceneManager {
         }
     }
 
-    private enable(scene: Scene, duration = DEFAULT_TRANSITION_DURATION, fadeMode = FadeMode.CROSS) {
+    private enable(scene: Scene, duration = DEFAULT_TRANSITION_DURATION, fadeMode = FadeMode.CROSS, payload?: Object) {
         const data = this.getData(scene);
         if (data.fadeDirection <= 0) {
-            scene.onStart();
+            scene.onStart(payload);
         }
         data.fadeDirection = 1;
         switch (fadeMode) {
