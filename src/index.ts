@@ -33,6 +33,7 @@ function buildLevel(gameScene: GameScene): Level {
     level.addBlock(400, 1400, 200, 200);
     level.addBlock(500, 1310, 500, 200);
     level.addBlock(1200, 1310, 200, 200);
+    level.addBlock(800, 510, 1000, 200);
     (window as any).elevator = level.addBlock(new MovingBlock(200, 1300, 260, 20, 500).addTarget(200, 1000).setMovement(Movements.SIN));
     level.addBlock(new MovingBlock(600, 1290, 260, 20, 250).addTarget(1200, 1290).addTarget(1200, 800).addTarget(1200, 1190).setMovement(Movements.SIN).setPause(1));
     const p1 = new Player(100, 1400), p2 = new Player(200, 1400);
