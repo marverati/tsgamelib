@@ -60,9 +60,9 @@ export default class Character {
 
         // Horizontal acceleration
         
-        let playerBaseSpeed =  this.targetDirection * this.speed 
+        let playerBaseSpeed =  this.targetDirection * this.speed;
         if (this.level.scene.getKeyHandler().get("Shift")) {  // TODO move to ControlsHandler
-            playerBaseSpeed *= 2
+            playerBaseSpeed *= 2;
         }
         let targetSpeed = playerBaseSpeed + this.groundVelocity.x;
 
