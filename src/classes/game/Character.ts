@@ -40,6 +40,7 @@ export default class Character {
     protected lastTimeStanding = -Infinity;
     protected time = 0;
     protected hasAirControl = true;
+    protected sprintFactor = 3;
 
     public constructor(x: number, y: number, w: number, h: number, speed: number, jumpPower: number, color: string = "black") {
         this.pos = new Vector2(x, y);
@@ -58,7 +59,13 @@ export default class Character {
         this.time = time;
 
         // Horizontal acceleration
-        const targetSpeed = this.targetDirection * this.speed + this.groundVelocity.x;
+        
+        let playerBaseSpeed =  this.targetDirection * this.speed 
+        if (this.level.scene.getKeyHandler().get("Shift")) {  // TODO move to ControlsHandler
+            playerBaseSpeed *= 2
+        }
+        let targetSpeed = playerBaseSpeed + this.groundVelocity.x;
+
         if (this.v.x !== targetSpeed && (this.standing || this.hasAirControl)) {
             const directionFactor = targetSpeed > this.v.x ? 1 : -1;
             const acc = this.standing ? this.groundAcceleration : this.airAcceleration;
