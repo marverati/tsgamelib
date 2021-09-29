@@ -64,7 +64,7 @@ export default class Character {
         if (this.level.scene.getKeyHandler().get("Shift")) {  // TODO move to ControlsHandler
             playerBaseSpeed *= 2;
         }
-        let targetSpeed = playerBaseSpeed + this.groundVelocity.x;
+        targetSpeed = playerBaseSpeed + this.groundVelocity.x;
 
         if (this.v.x !== targetSpeed && (this.standing || this.hasAirControl)) {
             const directionFactor = targetSpeed > this.v.x ? 1 : -1;
